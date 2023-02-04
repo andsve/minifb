@@ -69,6 +69,8 @@ mfb_open_ex(const char *title, unsigned width, unsigned height, unsigned flags) 
         }
         SWindowData_OSX *window_data_osx = (SWindowData_OSX *) window_data->specific;
 
+        mfb_set_viewport_best_fit((struct mfb_window *)window_data, width, height);
+
         init_keycodes();
 
         [NSApplication sharedApplication];
@@ -76,6 +78,8 @@ mfb_open_ex(const char *title, unsigned width, unsigned height, unsigned flags) 
 
         NSRect              rectangle, frameRect;
         NSWindowStyleMask   styles = 0;
+
+        styles = NSWindowStyleMaskFullSizeContentView;
 
         if (flags & WF_BORDERLESS) {
             styles |= NSWindowStyleMaskBorderless;
@@ -122,6 +126,9 @@ mfb_open_ex(const char *title, unsigned width, unsigned height, unsigned flags) 
             free(window_data);
             return 0x0;
         }
+
+        [window_data_osx->window setTitlebarAppearsTransparent:YES];
+        [window_data_osx->window setTitleVisibility:NSWindowTitleHidden];
 
     #if defined(USE_METAL_API)
         window_data_osx->viewController = [[OSXViewDelegate alloc] initWithWindowData:window_data];
