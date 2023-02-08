@@ -18,6 +18,12 @@
 //-------------------------------------
 void init_keycodes();
 
+void mfb_force_display(struct mfb_window* window) {
+    SWindowData *window_data = (SWindowData *) window;
+    SWindowData_OSX *window_data_osx = (SWindowData_OSX *) window_data->specific;
+    [[window_data_osx->window contentView] setNeedsDisplay:YES];
+}
+
 //-------------------------------------
 SWindowData *
 create_window_data(unsigned width, unsigned height) {
@@ -69,7 +75,6 @@ mfb_open_ex(const char *title, unsigned width, unsigned height, unsigned flags) 
         }
         SWindowData_OSX *window_data_osx = (SWindowData_OSX *) window_data->specific;
 
-        mfb_set_viewport_best_fit((struct mfb_window *)window_data, width, height);
 
         init_keycodes();
 
@@ -266,13 +271,13 @@ mfb_update_ex(struct mfb_window *window, void *buffer, unsigned width, unsigned 
     window_data->draw_buffer = buffer;
 #endif
 
-    update_events(window_data);
-    if(window_data->close) {
-        destroy_window_data(window_data);
-        return STATE_EXIT;
-    }
+    // update_events(window_data);
+    // if(window_data->close) {
+    //     destroy_window_data(window_data);
+    //     return STATE_EXIT;
+    // }
 
-    [[window_data_osx->window contentView] setNeedsDisplay:YES];
+    // [[window_data_osx->window contentView] setNeedsDisplay:YES];
 
     return STATE_OK;
 }
@@ -296,8 +301,8 @@ mfb_update_events(struct mfb_window *window) {
         return STATE_EXIT;
     }
 
-    SWindowData_OSX *window_data_osx = (SWindowData_OSX *) window_data->specific;
-    [[window_data_osx->window contentView] setNeedsDisplay:YES];
+    // SWindowData_OSX *window_data_osx = (SWindowData_OSX *) window_data->specific;
+    // [[window_data_osx->window contentView] setNeedsDisplay:YES];
 
     return STATE_OK;
 }

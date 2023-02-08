@@ -34,6 +34,7 @@ struct mfb_window * mfb_open_ex(const char *title, unsigned width, unsigned heig
 mfb_update_state    mfb_update(struct mfb_window *window, void *buffer);
 
 mfb_update_state    mfb_update_ex(struct mfb_window *window, void *buffer, unsigned width, unsigned height);
+void                mfb_force_display(struct mfb_window* window);
 
 // Only updates the window events
 mfb_update_state    mfb_update_events(struct mfb_window *window);
