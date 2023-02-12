@@ -41,6 +41,12 @@
 	return resizeRect;
 }
 
+CGImageRef img = NULL;
+CGDataProviderRef provider = NULL;
+const CGFloat components[] = {0.0f, 0.0f, 0.0f, 1.0f};
+CGColorRef black;
+bool created = false;
+
 //-------------------------------------
 - (void)drawRect:(NSRect)rect {
 	(void)rect;
@@ -54,36 +60,43 @@
 
     CGContextRef context = [[NSGraphicsContext currentContext] CGContext];
 
-	CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
-	CGDataProviderRef provider = CGDataProviderCreateWithData(0x0,
-                                                              window_data->draw_buffer,
-                                                              window_data->buffer_width * window_data->buffer_height * 4,
-                                                              0x0
-    );
+    if (!created) {
+        CGContextSetInterpolationQuality(context, kCGInterpolationNone);
+        CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
 
-	CGImageRef img = CGImageCreate(window_data->buffer_width
-                                 , window_data->buffer_height
-                                 , 8
-                                 , 32
-                                 , window_data->buffer_width * 4
-                                 , space
-                                 , kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little
-                                 , provider
-                                 , 0x0
-                                 , false
-                                 , kCGRenderingIntentDefault
-    );
+    	provider = CGDataProviderCreateWithData(0x0,
+                                                window_data->draw_buffer,
+                                                window_data->buffer_width * window_data->buffer_height * 4,
+                                                0x0
+        );
 
-    const CGFloat components[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    const CGColorRef black = CGColorCreate(space, components);
+    	img = CGImageCreate(window_data->buffer_width
+                                     , window_data->buffer_height
+                                     , 8
+                                     , 32
+                                     , window_data->buffer_width * 4
+                                     , space
+                                     , kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little
+                                     , provider
+                                     , 0x0
+                                     , false
+                                     , kCGRenderingIntentDefault
+        );
+        black = CGColorCreate(space, components);
 
-	CGColorSpaceRelease(space);
-	CGDataProviderRelease(provider);
+        created = true;
 
-    if(window_data->dst_offset_x != 0 || window_data->dst_offset_y != 0 || window_data->dst_width != window_data->window_width || window_data->dst_height != window_data->window_height) {
-        CGContextSetFillColorWithColor(context, black);
-        CGContextFillRect(context, rect);
+        printf("created initial CGImage");
+	   CGColorSpaceRelease(space);
     }
+
+
+	// CGDataProviderRelease(provider);
+
+    // if(window_data->dst_offset_x != 0 || window_data->dst_offset_y != 0 || window_data->dst_width != window_data->window_width || window_data->dst_height != window_data->window_height) {
+    //     CGContextSetFillColorWithColor(context, black);
+    //     CGContextFillRect(context, rect);
+    // }
 
     // TODO: Sometimes there is a crash here
 	CGContextDrawImage(context,
@@ -91,7 +104,10 @@
                        img
     );
 
-	CGImageRelease(img);
+    // self.layer.contents = img;
+
+
+	// CGImageRelease(img);
 }
 
 #endif
